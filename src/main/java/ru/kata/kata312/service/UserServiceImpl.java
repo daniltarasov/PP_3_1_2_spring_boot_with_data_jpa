@@ -2,43 +2,58 @@ package ru.kata.kata312.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.kata.kata312.dao.UserDAO;
 import ru.kata.kata312.model.User;
+import ru.kata.kata312.repositories.UserRepository;
+import ru.kata.kata312.service.UserService;
+
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
-    private final UserDAO userDAO;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public List<User> getAllUserList() {
-        return userDAO.getAllUserList();
+        return userRepository.findAll();
+    }
+
+
+    @Override
+    public User getUserById(int id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.orElse(null);
     }
 
     @Override
     public void addUser(User user) {
-        userDAO.addUser(user);
+        userRepository.save(user);
     }
 
     @Override
-    public User getUserById(int id){
-        return userDAO.getUserById(id);
+    public void update(int id, User updatedUser) {
+        updatedUser.setId(id);
+        userRepository.save(updatedUser);
     }
 
     @Override
-    public void update(User user){
-        userDAO.update(user);
+    public void delete(int id) {
+        userRepository.deleteById(id);
     }
-
-    @Override
-    public void delete(int id){
-        userDAO.delete(id);
-    }
-
 }
+
+
+
+
+
+
+
